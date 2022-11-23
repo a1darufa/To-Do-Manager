@@ -20,6 +20,12 @@ class TaskListVC: UITableViewController {
                     return task1position < task2position
                 }
             }
+            
+            var savingArray: [TaskProtocol] = []
+            tasks.forEach { _, value in
+                savingArray += value
+            }
+            tasksStorage.saveTasks(savingArray)
         }
     }
     var sectionsTypesPosition: [TaskPriority] = [.important, .normal]
@@ -28,13 +34,6 @@ class TaskListVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadTasks()
-        
-        
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
         navigationItem.leftBarButtonItem = editButtonItem
     }
 
@@ -115,27 +114,12 @@ class TaskListVC: UITableViewController {
         return actionConfiguration
     }
 
-    /*
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return indexPath.row == 0 ? false : true
-    }
-    */
-
-    /*
-    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        return indexPath.row == 0 ? .insert : .delete
-    }
-    */
-    
-    // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         let taskType = sectionsTypesPosition[indexPath.section]
         tasks[taskType]?.remove(at: indexPath.row)
         tableView.deleteRows(at: [indexPath], with: .automatic)
     }
 
-
-    // Override to support rearranging the table view.
     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
         let taskTypeFrom = sectionsTypesPosition[fromIndexPath.section]
         let taskTypeTo = sectionsTypesPosition[to.section]
@@ -152,16 +136,11 @@ class TaskListVC: UITableViewController {
         tableView.reloadData()
     }
 
-    // Override to support conditional rearranging of the table view.
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
         return true
     }
 
-
     // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toCreateScreen" {
             let destination = segue.destination as! TaskEditVC
@@ -170,6 +149,16 @@ class TaskListVC: UITableViewController {
                 tasks[type]?.append(newTask)
                 tableView.reloadData()
             }
+        }
+    }
+    
+    func setTasks(_ tasksCollection: [TaskProtocol]) {
+        sectionsTypesPosition.forEach { taskType in
+            tasks[taskType] = []
+        }
+        
+        tasksCollection.forEach { task in
+            tasks[task.type]?.append(task)
         }
     }
 
