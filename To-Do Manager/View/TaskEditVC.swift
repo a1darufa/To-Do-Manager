@@ -35,7 +35,12 @@ class TaskEditVC: UITableViewController {
     }
     
     @IBAction func saveTask(_ sender: UIBarButtonItem) {
-        let title = taskTitle.text ?? ""
+        guard taskTitle.text != "" else {
+            alert(title: "Warning", message: "Fill the task title", style: .alert)
+            return
+        }
+        
+        let title = taskTitle.text!
         let type = taskType
         let status: TaskStatus = taskStatusSwitch.isOn ? .completed : .planned
         doAfterEdit?(title, type, status)
@@ -54,6 +59,10 @@ class TaskEditVC: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         return 3
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 
     // MARK: - Navigation
     
@@ -64,5 +73,15 @@ class TaskEditVC: UITableViewController {
             taskType = selectedType
             taskTypeLabel?.text = taskTitles[taskType]
         }
+    }
+    
+        //MARK: Methods
+    func alert(title: String, message: String, style: UIAlertController.Style) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: style)
+        let actionOK = UIAlertAction(title: "OK", style: .default)
+        
+        alert.addAction(actionOK)
+        
+        self.present(alert, animated: true, completion: nil)
     }
 }

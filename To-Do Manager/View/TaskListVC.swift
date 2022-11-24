@@ -67,6 +67,16 @@ class TaskListVC: UITableViewController {
         return title
     }
     
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        let taskType = sectionsTypesPosition[section]
+        if let tasksSection = tasks[taskType] {
+            guard !tasksSection.isEmpty else {
+                return "There no tasks yet"
+            }
+        }
+        return nil
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let taskType = sectionsTypesPosition[indexPath.section]
         guard let _ = tasks[taskType]?[indexPath.row] else { return }
